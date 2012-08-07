@@ -132,8 +132,7 @@ function getVer()
           ".miniLabel{color:#999; font-size:75%;}"+
           ".miniLabel a{color:#444; text-decoration:underline;}");
           
-          var body = document.getElementsByTagName("body");
-          body[0].appendChild(settingsBox);
+          document.body.appendChild(settingsBox);
           
           var saveButton = document.getElementById("saveSettings");
           var killButton = document.getElementById("close");
