@@ -286,41 +286,34 @@ function getVer()
   );
   }
   
-  function addDDtab()
-  {
-  
-    var isGroup = document.getElementById("group");
-    if(isGroup == null)
-    {
-    var tab = document.createElement('td')
-    tab.id = "ddTab";
-    var src = document.location.href;
-    var splitPage = src.split("/");
-    
-    if(splitPage[3] == "dds")
-    {
-      var innerTab = '<a class="gtab gtabi-mc" href="/dds/" ><i class="icon i29"></i><i class="gtab-i gtabi-mc"></i>DD\'s</a>';
-    }
-    else{
-      var innerTab = '<a class="gtab" href="/dds/" ><i class="icon i29"></i>DD\'s</a>';
-    }
-    
-    tab.class="f";
-    tab.innerHTML = innerTab
-    var tables = document.getElementsByTagName("*");
-    for(var i = 0; i < tables.length; i++)
-    {
-      if(tables[i].className == "iconset-gruser f")
-      {    
-        var  tabBox = tables[i]
-        if(tabBox.firstChild.firstChild != null)
-        {
-          tabBox.firstChild.firstChild.appendChild(tab);
-        }
-      }
-    }
-    }
-  }
+function addDDtab()
+{ 
+	if(document.getElementById("group") == null)
+	{
+		var tab = document.createElement('td')
+			tab.id = "ddTab";
+
+		if(document.location.pathname.indexOf('dds') != -1)
+		{
+			tab.innerHTML = '<a class="gtab gtabi-mc" href="/dds/" ><i class="icon i29"></i><i class="gtab-i gtabi-mc"></i>DD\'s</a>';
+		} else{
+			tab.innerHTML = '<a class="gtab" href="/dds/" ><i class="icon i29"></i>DD\'s</a>';
+		}
+		tab.class="f";
+		var tables = document.getElementsByTagName("*");
+		for(var i = 0; i < tables.length; i++)
+		{
+			if(tables[i].className == "iconset-gruser f")
+			{    
+				var  tabBox = tables[i]
+					if(tabBox.firstChild.firstChild != null)
+					{
+						tabBox.firstChild.firstChild.appendChild(tab);
+					}
+			}
+		}
+	}
+}
         
         
   function groupLog()
@@ -829,30 +822,28 @@ function staffSearch(splitStaffSource)
     unsafeWindow.Blogobox.note(this); 
   }
   
-  function ajaxFoiler()
-  {
-                    
-          simpleHref = this.getAttribute("href").split('?q=')[0];
-      //   alert(simpleHref);
-          window.location = simpleHref;
-            return false; 
-          }
-          
-          function deAjaxify()
-          {
-          if(document.URL.indexOf("?q=") != -1)
-          {
-            var cleanURL = document.URL.split("?q=")[0];
-           document.URL = cleanURL;
-          }
-          if(document.URL.indexOf("/art/") == -1)
-          {
-          for(var i = 0; i < document.images.length; i++)
-          {      
-              document.images[i].parentNode.addEventListener('click', ajaxFoiler, false);
-          }
-          }
-          }
+function ajaxFoiler()
+{
+	simpleHref = this.getAttribute("href").split('?q=')[0];
+	window.location = simpleHref;
+	return false; 
+}
+
+function deAjaxify()
+{
+	if(document.URL.indexOf("?q=") != -1)
+	{
+		var cleanURL = document.URL.split("?q=")[0];
+		document.URL = cleanURL;
+	}
+	if(document.URL.indexOf("/art/") == -1)
+	{
+		for(var i = 0; i < document.images.length; i++)
+		{      
+			document.images[i].parentNode.addEventListener('click', ajaxFoiler, false);
+		}
+	}
+}
   
   function initFormat()
   {
