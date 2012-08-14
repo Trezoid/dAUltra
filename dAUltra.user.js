@@ -15,7 +15,7 @@ var dAUltraVer = "1.5";
 var thumbSize = 280;
 var preFill = "I would like to suggest %deviation% by %artist% for a DD because";
 var currentPage = ""; 
-  var timePassed = 0;
+  var timePassed= 0;
 
 
 /***********************
@@ -68,80 +68,56 @@ function getVer()
     } 
  
       
-        function settingsModal()
-        {
-          var settingsBox = document.createElement("div");
-          settingsBox.setAttribute("id", "settingsBox");
-          
-                       
-          var resize="";
-          var groups ="";
-          var forms ="";
-          var Show = "";
-          var preflight = "";
-          var tabs = "";
-          
-          var settingBlob = GM_getValue("dAUltra");
-            
-          if(settingBlob == null || settingBlob =="" || settingBlob == " ")
-          {
-            var settingBlob ="true|280|true|true|true|true|true|I would like to suggest %deviation% by %artist% because";
-          } else {
-          settingBlob = settingBlob.split("|");
-          if(settingBlob[0] == "true")
-          {
-            resize="checked";
-          }
-          if(settingBlob[2] == "true")
-          {
-            groups="checked";
-          }
-          if(settingBlob[3] == "true")
-          {
-            forms="checked";
-          }
-          if(settingBlob[4] =="true")
-            tabs = "checked";
-          }
-          if(settingBlob[5] == "true")
-          {
-            Show="checked";
-          }
-          if(settingBlob[6] == "true")
-          {
-            preflight="checked";
-          }
-          
-         
-          
-          settingsBox.innerHTML ='<div id="settingsHead">dAUltra Settings</div><div id="settingsBody">'
-                +'<div id ="leftPane" class="sidePane"><div class="thumbSets"><h3>thumbs</h3><label class="properLabel">resize thumbs</label><input type="checkbox" name="showthumbs" id="showthumbs" '+resize+'="'+resize+'"/><br/> <label Class="properLabel">thumb size</label><br/><label class="miniLabel">the standard size is 150px</label><br/><input type="textarea" name="thumbSize" id="thumbsize" value ="'+thumbSize+'" maxlength="4" size="4"/>px</div><div class="groupLinks"><h3>Group links</h3><label class="properLabel">Show group links</label><input type="checkbox" name="showGroup" id="showGroup" '+groups+'="'+groups+'"/></div><div class ="formattingButtons"><h3>Formatting buttons</h3><label class="properLabel">show formatting buttons</label><input type="checkbox" name="showFormatting" id="showFormatting" '+forms+'="'+forms+'"/></div></div><div id="rightPane" class="sidePane"><div id="suggDD"><h3>Suggest DD\'s</h3><label class="properLabel">Show DD tab</label><input type="checkbox" name ="tabs" id ="tabs" '+tabs+'="'+tabs+'"/><br/><label class="properLabel">Show suggest DD\'s</label><input type="checkbox" name="showDD" id="showDD" '+Show+'="'+Show+'"/><br/><label class="properLabel">Prefill suggestion</label><input type="checkbox" name="preFill" id="preFill" '+preflight+'="'+preflight+'"/><br/><label class="properLabel">Prefill content</label><br/><label class="miniLabel">%deviation% by %artist% becomes <a>deviation</a> by ~artist</label><br/><div id="preFlight"><textarea id="preFillContent">'+preFill+'</textarea></div></div></div><div class="settingsFeet"><a class="smbutton smbutton-blue" href="#" id="saveSettings"><span>save</span><a><a class="smbutton smbutton-pale" href="#" id="close"><span>cancel</span><a><a id="promoLink" href="#"class="smbutton smbutton-pale"><span>about</span></a></div></div></div>';
-          
-          GM_addStyle("#settingsBox{position:fixed!important; top:100px; left:0; right:0; margin-left:auto; margin-right:auto;width:600px; height:400px; background: #d2dfd1; -moz-box-shadow:10px 10px 10px #000;z-index:1000; -moz-border-radius:10px!important;font-family:'helvetica neue', helvetica, verdana, san-serif;}"+
-          ".sidePane{height:500px; bottom:0; position:relative; float:left;width:250px;padding-left:50px;padding-top:15px;}" +
-          "#preFillContent{height:100px;}" +
-          "#preFlight{width:200px!important;height:101px;}"+
-          "#preFlight .ultraButtonBox{display:none!important;}"+
-          "#settingsHead{width:100%; height:85px;padding-top:6px; text-align:center; background:-moz-linear-gradient(#405147, #607465); background: -webkit-linear-gradient(#405147, #607465); border-bottom:1px solid #82a180; -moz-box-shadow:0px 1px 4px #3C4F41;font-size:60px; color:#fff; text-shadow:0px -1px 0px #3C4F41;-moz-border-radius-topleft:10px;-moz-border-radius-topright:10px;}"+
-          ".properLabel, #settingsHead input{margin-top:15px;}"+
-          "#suggDD textarea{padding:4px!important;}"+
-          "#settingsBox h3{color:#fff; text-shadow:0px -1px 0px #83a181; font-size:20px; padding-top:10px;}"+
-          ".settingsFeet{position:absolute; bottom:10px; width:100%; text-align:center; z-index:1001;}"+
-          ".settingsFeet a{margin-left:20px;}"+
-          "#promoLink{position:absolute; right:10px; bottom:0px;}"+
-          ".miniLabel{color:#999; font-size:75%;}"+
-          ".miniLabel a{color:#444; text-decoration:underline;}");
-          
-          document.body.appendChild(settingsBox);
-          
-          var saveButton = document.getElementById("saveSettings");
-          var killButton = document.getElementById("close");
-          var proLink = document.getElementById("promoLink");
-          
-          saveButton.addEventListener('click', saveSettings, false);
-          killButton.addEventListener('click', killBox, false);
-          proLink.addEventListener('click', aboutBox, false);
-          }
+function settingsModal()
+{
+	var settingsBox = document.createElement("div");
+	settingsBox.setAttribute("id", "settingsBox");
+	var settingBlob = GM_getValue("dAUltra");
+		var resize, thumbSize, groups, forms, tabs, Show, preflight, preFill;
+		settingBlob = JSON.parse(settingBlob);
+		if(settingBlob["resize"])
+			resize = "checked";
+			thumbSize = settingBlob["thumbSize"];
+		if(settingBlob["group"])
+			groups = "checked";
+		if(settingBlob["format"])
+			forms = "checked";
+		if(settingBlob["tabs"])
+			tabs = "checked";
+		if(settingBlob["suggDD"])
+			Show = "checked";
+		if(settingBlob["preflight"])
+			preflight = "checked";
+		preFill = settingBlob["prefill"];
+
+settingsBox.innerHTML ='<div id="settingsHead">dAUltra Settings</div><div id="settingsBody">'
++'<div id ="leftPane" class="sidePane"><div class="thumbSets"><h3>thumbs</h3><label class="properLabel">resize thumbs</label><input type="checkbox" name="showthumbs" id="showthumbs" '+resize+'="'+resize+'"/><br/> <label Class="properLabel">thumb size</label><br/><label class="miniLabel">the standard size is 150px</label><br/><input type="textarea" name="thumbSize" id="thumbsize" value ="'+thumbSize+'" maxlength="4" size="4"/>px</div><div class="groupLinks"><h3>Group links</h3><label class="properLabel">Show group links</label><input type="checkbox" name="showGroup" id="showGroup" '+groups+'="'+groups+'"/></div><div class ="formattingButtons"><h3>Formatting buttons</h3><label class="properLabel">show formatting buttons</label><input type="checkbox" name="showFormatting" id="showFormatting" '+forms+'="'+forms+'"/></div></div><div id="rightPane" class="sidePane"><div id="suggDD"><h3>Suggest DD\'s</h3><label class="properLabel">Show DD tab</label><input type="checkbox" name ="tabs" id ="tabs" '+tabs+'="'+tabs+'"/><br/><label class="properLabel">Show suggest DD\'s</label><input type="checkbox" name="showDD" id="showDD" '+Show+'="'+Show+'"/><br/><label class="properLabel">Prefill suggestion</label><input type="checkbox" name="preFill" id="preFill" '+preflight+'="'+preflight+'"/><br/><label class="properLabel">Prefill content</label><br/><label class="miniLabel">%deviation% by %artist% becomes <a>deviation</a> by ~artist</label><br/><div id="preFlight"><textarea id="preFillContent">'+preFill+'</textarea></div></div></div><div class="settingsFeet"><a class="smbutton smbutton-blue" href="#" id="saveSettings"><span>save</span><a><a class="smbutton smbutton-pale" href="#" id="close"><span>cancel</span><a><a id="promoLink" href="#"class="smbutton smbutton-pale"><span>about</span></a></div></div></div>';
+
+GM_addStyle("#settingsBox{position:fixed!important; top:100px; left:0; right:0; margin-left:auto; margin-right:auto;width:600px; height:400px; background: #d2dfd1; -moz-box-shadow:10px 10px 10px #000;z-index:1000; -moz-border-radius:10px!important;font-family:'helvetica neue', helvetica, verdana, san-serif;}"+
+		".sidePane{height:500px; bottom:0; position:relative; float:left;width:250px;padding-left:50px;padding-top:15px;}" +
+		"#preFillContent{height:100px;}" +
+		"#preFlight{width:200px!important;height:101px;}"+
+		"#preFlight .ultraButtonBox{display:none!important;}"+
+		"#settingsHead{width:100%; height:85px;padding-top:6px; text-align:center; background:-moz-linear-gradient(#405147, #607465); background: -webkit-linear-gradient(#405147, #607465); border-bottom:1px solid #82a180; -moz-box-shadow:0px 1px 4px #3C4F41;font-size:60px; color:#fff; text-shadow:0px -1px 0px #3C4F41;-moz-border-radius-topleft:10px;-moz-border-radius-topright:10px;}"+
+		".properLabel, #settingsHead input{margin-top:15px;}"+
+		"#suggDD textarea{padding:4px!important;}"+
+		"#settingsBox h3{color:#fff; text-shadow:0px -1px 0px #83a181; font-size:20px; padding-top:10px;}"+
+		".settingsFeet{position:absolute; bottom:10px; width:100%; text-align:center; z-index:1001;}"+
+		".settingsFeet a{margin-left:20px;}"+
+		"#promoLink{position:absolute; right:10px; bottom:0px;}"+
+		".miniLabel{color:#999; font-size:75%;}"+
+		".miniLabel a{color:#444; text-decoration:underline;}");
+
+document.body.appendChild(settingsBox);
+
+var saveButton = document.getElementById("saveSettings");
+var killButton = document.getElementById("close");
+var proLink = document.getElementById("promoLink");
+
+saveButton.addEventListener('click', saveSettings, false);
+killButton.addEventListener('click', killBox, false);
+proLink.addEventListener('click', aboutBox, false);
+}
         
         function killBox()
         {
@@ -160,7 +136,18 @@ function getVer()
           var suggDD = document.getElementById("showDD");
           var doPrefill = document.getElementById("preFill");
           var preFill = document.getElementById("preFillContent");
-          GM_setValue("dAUltra", resize.checked +"|"+ thumbly.value +"|"+ group.checked +"|"+ format.checked +"|"+ tabby.checked+"|"+suggDD.checked +"|"+ doPrefill.checked +"|"+ preFill.value);
+          var settings = { 
+		  "resize" : resize.checked,
+		  "thumbSize" : thumbly.value,
+		  "group" : group.checked,
+		  "format" : format.checked,
+		  "tabs" : tabby.checked,
+		  "suggDD" : suggDD.checked,
+		  "preflight" : doPrefill.checked,
+		  "prefill" : preFill.value
+	  }
+		  	
+	  GM_setValue("dAUltra", JSON.stringify(settings));
           killBox();
           window.location.reload(true);
         }
@@ -205,24 +192,14 @@ function getVer()
          var about = document.createElement("div");
          about.setAttribute("id", "aboutBox");
           about.innerHTML = '<a class="x x-mac" id ="aboutClose" href="#">x</a><a href="http://trezoid.deviantart.com/art/dAUltra-197384035">dAUltra</a> is a userscript created by <a href="http://trezoid.deviantart.com">Trezoid</a>.<br/> If you find that something is broken, or want to suggest something, just let him know.<br/><br/>many thanks go to <a href="http://electricnet.deviantart.com">Electricnet</a> for general awesomeness and implimentation advice, and <a href="http://namenotrequired.deviantart.com">namenotrequired</a> for the huge list of bug reports and feature suggestions.'
-         var body = document.getElementsByTagName("body");
          
          GM_addStyle("#aboutBox{width:300px; height:200px;background: #d2dfd1; -moz-box-shadow:10px 10px 10px #000;z-index:1000; -moz-border-radius:10px!important;font-family:'helvetica neue', helvetica, verdana, san-serif;padding:20px; position:fixed; left:0; right:0; margin-left:auto; margin-right:auto; top:150px;font-size:16px;z-index:1001;}"+
          "#aboutClose{position:absolute; top:10px; right:10px;}");
          
-         body[0].appendChild(about);
+         document.body.appendChild(about);
          var closeButton = document.getElementById("aboutClose");
-         closeButton.addEventListener('click', killAbout, false);
+         closeButton.addEventListener('click', function(){ document.body.removeChild(about);}, false);
          }  
-         
-         function killAbout()
-         {
-            var about = document.getElementById("aboutBox");
-            var body = document.getElementsByTagName("body");
-            
-            body[0].removeChild(about);
-         }
-         
 
   function getImages()
   {	
@@ -924,102 +901,102 @@ for(var i = 0; i < textBoxes.length; i++)
     }
   }
   
-  function format()
-  {
-  var button = this.childNodes[0].id;
- if(document.URL.indexOf("messages") == -1)
- { 
-  var currentText = this.parentNode.parentNode.childNodes[3];
-  }
-  else{
-  var currentText = this.parentNode.parentNode.childNodes[0];
-  }   
-  var selectStart = currentText.selectionStart;
-     var selectEnd = currentText.selectionEnd;   
-     var preText = "";
-     var formText = "";
-     var postText = "";
-     var allText = currentText.value.split("");
-     for(var i = 0; i < selectStart; i++)
-     {
-      preText = preText + allText[i];
-      }
-      for(var i = selectStart; i < selectEnd; i++)
-     {
-      formText = formText + allText[i];
-      }
-      for(var i = selectEnd; i < allText.length; i++)
-     {
-      postText = postText + allText[i];
-      }
-      
-   var formatted = preText + "<"+button+">" + formText + "</"+button+">" + postText;
-   currentText.value = formatted;
-  }
-  
-  function link()
-  {
-  var linkRef = prompt("Address of the page you want to link to");
- if(document.URL.indexOf("messages") == -1)
- { 
-  var currentText = this.parentNode.parentNode.childNodes[3];
-  }
-  else{
-  var currentText = this.parentNode.parentNode.childNodes[0];
-  }   
-     var selectStart = currentText.selectionStart;
-     var selectEnd = currentText.selectionEnd;   
-     var preText = "";
-     var formText = "";
-     var postText = "";
-     var allText = currentText.value.split("");
-     for(var i = 0; i < selectStart; i++)
-     {
-      preText = preText + allText[i];
-      }
-      for(var i = selectStart; i < selectEnd; i++)
-     {
-      formText = formText + allText[i];
-      }
-      for(var i = selectEnd; i < allText.length; i++)
-     {
-      postText = postText + allText[i];
-      } 
-   var formatted = preText + '<a href="' +linkRef+'">' + formText + "</a>" + postText;
-   currentText.value = formatted;
-  }
-  
-  function acro()
-  {
-  var acroTool = prompt("tooltip content");
- if(document.URL.indexOf("messages") == -1)
- { 
-  var currentText = this.parentNode.parentNode.childNodes[3];
-  }
-  else{
-  var currentText = this.parentNode.parentNode.childNodes[0];
-  }   
-     var selectStart = currentText.selectionStart;
-     var selectEnd = currentText.selectionEnd;   
-     var preText = "";
-     var formText = "";
-     var postText = "";
-     var allText = currentText.value.split("");
-     for(var i = 0; i < selectStart; i++)
-     {
-      preText = preText + allText[i];
-      }
-      for(var i = selectStart; i < selectEnd; i++)
-     {
-      formText = formText + allText[i];
-      }
-      for(var i = selectEnd; i < allText.length; i++)
-     {
-      postText = postText + allText[i];
-      }
-   var formatted = preText + '<acronym title="' +acroTool+'">' + formText + "</acronym>" + postText;
-   currentText.value = formatted;
-  }
+function format()
+{
+	var button = this.childNodes[0].id;
+	if(document.URL.indexOf("messages") == -1)
+	{ 
+		var currentText = this.parentNode.parentNode.childNodes[3];
+	}
+	else{
+		var currentText = this.parentNode.parentNode.childNodes[0];
+	}   
+	var selectStart = currentText.selectionStart;
+	var selectEnd = currentText.selectionEnd;   
+	var preText = "";
+	var formText = "";
+	var postText = "";
+	var allText = currentText.value.split("");
+	for(var i = 0; i < selectStart; i++)
+	{
+		preText = preText + allText[i];
+	}
+	for(var i = selectStart; i < selectEnd; i++)
+	{
+		formText = formText + allText[i];
+	}
+	for(var i = selectEnd; i < allText.length; i++)
+	{
+		postText = postText + allText[i];
+	}
+
+	var formatted = preText + "<"+button+">" + formText + "</"+button+">" + postText;
+	currentText.value = formatted;
+}
+
+function link()
+{
+	var linkRef = prompt("Address of the page you want to link to");
+	if(document.URL.indexOf("messages") == -1)
+	{ 
+		var currentText = this.parentNode.parentNode.childNodes[3];
+	}
+	else{
+		var currentText = this.parentNode.parentNode.childNodes[0];
+	}   
+	var selectStart = currentText.selectionStart;
+	var selectEnd = currentText.selectionEnd;   
+	var preText = "";
+	var formText = "";
+	var postText = "";
+	var allText = currentText.value.split("");
+	for(var i = 0; i < selectStart; i++)
+	{
+		preText = preText + allText[i];
+	}
+	for(var i = selectStart; i < selectEnd; i++)
+	{
+		formText = formText + allText[i];
+	}
+	for(var i = selectEnd; i < allText.length; i++)
+	{
+		postText = postText + allText[i];
+	} 
+	var formatted = preText + '<a href="' +linkRef+'">' + formText + "</a>" + postText;
+	currentText.value = formatted;
+}
+
+function acro()
+{
+	var acroTool = prompt("tooltip content");
+	if(document.URL.indexOf("messages") == -1)
+	{ 
+		var currentText = this.parentNode.parentNode.childNodes[3];
+	}
+	else{
+		var currentText = this.parentNode.parentNode.childNodes[0];
+	}   
+	var selectStart = currentText.selectionStart;
+	var selectEnd = currentText.selectionEnd;   
+	var preText = "";
+	var formText = "";
+	var postText = "";
+	var allText = currentText.value.split("");
+	for(var i = 0; i < selectStart; i++)
+	{
+		preText = preText + allText[i];
+	}
+	for(var i = selectStart; i < selectEnd; i++)
+	{
+		formText = formText + allText[i];
+	}
+	for(var i = selectEnd; i < allText.length; i++)
+	{
+		postText = postText + allText[i];
+	}
+	var formatted = preText + '<acronym title="' +acroTool+'">' + formText + "</acronym>" + postText;
+	currentText.value = formatted;
+}
   
    function getBox()
 {
@@ -1057,62 +1034,64 @@ GM_xmlhttpRequest(
 
 function tumblButton()
 {
-var button = document.createElement("div");
-button.innerHTML = '<a href="http://www.tumblr.com/share" title="Share on Tumblr" style=\'display:inline-block; text-indent:36px; overflow:visible; width:20px; height:20px; background:url("http://platform.tumblr.com/v1/share_4.png") top left no-repeat transparent;\'>Tumblr</a>';
+	var button = document.createElement("div");
+	button.innerHTML = '<a href="http://www.tumblr.com/share" title="Share on Tumblr" style=\'display:inline-block; text-indent:36px; overflow:visible; width:20px; height:20px; background:url("http://platform.tumblr.com/v1/share_4.png") top left no-repeat transparent;\'>Tumblr</a>';
 
-var allDivs = document.getElementsByTagName("div");
+	var allDivs = document.getElementsByTagName("div");
 
-for(var i = 0; i < allDivs.length; i++)
-{
-  if(allDivs[i].className == "social ll")
-    {
-      var parent = allDivs[i];
-      parent.appendChild(button);
-      i = allDivs.length;
-    }
-}
+	for(var i = 0; i < allDivs.length; i++)
+	{
+		if(allDivs[i].className == "social ll")
+		{
+			var parent = allDivs[i];
+			parent.appendChild(button);
+			i = allDivs.length;
+		}
+	}
 }
   
-  function getGalls()
+function getGalls()
 {
-var allDD = document.getElementsByTagName("td");
-  for(var i = 0; i < (allDD.length); i++)
-  {
-    if(allDD[i].className == "f")
-    {
-      var soloDD = allDD[i];
-        if(!!soloDD.childNodes[0].getAttribute("category"))
-        {
-        var gallery = soloDD.childNodes[0].getAttribute("category");
-        }
-        else
-        {
-          var gallery = soloDD.childNodes[0].childNodes[0].getAttribute("category");
-        }
-        var galSpan = document.createElement("span");
-        galSpan.innerHTML = " <br/><br/><span><em>"+gallery+"</em></span>";
-        
-        
-        
-        
-        var feet = soloDD.getElementsByTagName("div");
-        for(var f = 0; f < feet.length; f++)
-        {
-          if(feet[f].className == "foot")
-          {
-            var foot = feet[f]
-            foot.appendChild(galSpan);
-            f = feet.length;
-          }
-        
-        }
-        
-       } 
-        
-      
-}
+	var allDD = document.getElementsByTagName("td");
+	for(var i = 0; i < (allDD.length); i++)
+	{
+		if(allDD[i].className == "f")
+		{
+			var soloDD = allDD[i];
+			if(!!soloDD.childNodes[0].getAttribute("category"))
+			{
+				var gallery = soloDD.childNodes[0].getAttribute("category");
+			}
+			else
+			{
+				var gallery = soloDD.childNodes[0].childNodes[0].getAttribute("category");
+			}
+			var galSpan = document.createElement("span");
+			galSpan.innerHTML = " <br/><br/><span><em>"+gallery+"</em></span>";
+			var feet = soloDD.getElementsByTagName("div");
+			for(var f = 0; f < feet.length; f++)
+			{
+				if(feet[f].className == "foot")
+				{
+					var foot = feet[f]
+						foot.appendChild(galSpan);
+					f = feet.length;
+				}
+
+			}
+
+		} 
+
+
+	}
 }
 
+function toBool(boolString)
+{
+	if(boolString != null && boolString.indexOf('true') > -1)
+		return true;
+	return false;
+}
   
   function scriptInit()
   {
@@ -1129,41 +1108,55 @@ var allDD = document.getElementsByTagName("td");
       }
     var settingBlob = GM_getValue("dAUltra");
     
-    
+    var settings = {}
+    if(settingBlob.indexOf("|") > -1)
+    {
+	    
     settingBlob = settingBlob.split("|");
     thumbSize = settingBlob[1];
-    if (settingBlob[6] != "true" && settingBlob[6] != "false")
-    {
-      settingBlob[7] = settingBlob[6];
-      settingBlob[6] = settingBlob[5];
-      settingBlob[5] = settingBlob[4];
-      settingBlob[4] = "true";
-      }
     preFill = settingBlob[7];
     
-    if(settingBlob[0] == "true")
+    settings = {
+	    "resize" : toBool(settingBlob[0]),
+	    "thumbSize" : settingBlob[1],
+	    "group" : toBool(settingBlob[2]),
+	    "format" : toBool(settingBlob[3]),
+	    "tabs" : toBool(settingBlob[4]),
+	    "suggDD" : toBool(settingBlob[5]),
+	    "doPrefill" : toBool(settingBlob[6]),
+	    "prefill" : toBool(settingBlob[7]),
+	    "deAjax" : toBool(settingBlob[8])
+    	}	    
+    GM_setValue("dAUltra", JSON.stringify(settings));
+    
+    } else {
+	    settings = JSON.parse(settingBlob);
+    }
+
+    
+    if(settings["resize"])
     {
       getImages();
     }
-    if(settingBlob[2] == "true")
+    if(settings["group"])
     {
       groupLog();
        groupMessage();
       }
-      if(settingBlob[3] =="true")
+      if(settings["format"])
       {
         formatButtons();
         setTimeout(initFormat, 500);
-        }
-        if(settingBlob[4] =="true")
+      }
+        if(settings["tabs"])
         {
           addDDtab();
         }
-        if(settingBlob[5] =="true")
+        if(settings["suggDD"])
         {
         suggestDD();
         }
-	if(settingBlob[8] == null || settingBlob[8] === "true")
+	if(settings["deAjax"])
 	{
 		deAjaxify();
 	}
@@ -1198,4 +1191,4 @@ firstTime();
   ".smbutton-red:hover{background:-moz-linear-gradient(-90deg, #f889a1, #e85877) repeat scroll 0 0 transparent!important;}"+
   ".smbutton-red:active{background:-moz-linear-gradient(-90deg, #bc2142, #e85877) repeat scroll 0 0 transparent!important;}"+
   ".stayAnon{margin-left:50px!important;}"
-  );
+  ); 
