@@ -5,6 +5,10 @@
 // @description    Adds extra features to dA
 // @author         Trezoid
 // @version         1.4.5.3
+// @grant	    GM_getValue
+// @grant	    GM_setValue
+// @grant	    GM_addStyle
+// @grant	    GM_xmlhttpRequest
 // ==/UserScript==
 
 /* Change log for 1.4.5.3
@@ -24,16 +28,16 @@ var currentPage = "";
 function getVer()
 {
 	GM_xmlhttpRequest({
-method: 'GET',
-url: " http://userscripts.org/scripts/show/95156",
-onload: function(details) {
-var latestVer = details.responseText.split("Version:</b>")[1].split("</p>")[0].replace(/\n/g, "");
-if(latestVer.indexOf(dAUltraVer) == -1)
-{
-updateAlert(latestVer);
-}
-}
-});
+		method: 'GET',
+		url: " http://userscripts.org/scripts/show/95156",
+		onload: function(details) {
+			var latestVer = "1.5";// details.responseText.split("Version:</b>")[1].split("</p>")[0].replace(/\n/g, "");
+			if(latestVer.indexOf(dAUltraVer) == -1)
+			{
+				updateAlert(latestVer);
+			}
+		}
+	});
 }
 
 
@@ -109,14 +113,13 @@ function settingsModal()
 
 	document.body.appendChild(settingsBox);
 
-	var saveButton = document.getElementById("saveSettings");
-	var killButton = document.getElementById("close");
-	var proLink = document.getElementById("promoLink");
+	document.getElementById("saveSettings").addEventListener('click', function(){saveSettings()}, false);
+	
+	document.getElementById("close").addEventListener('click', function(){document.body.removeChild(settingsBox)}, false);
+	
+	document.getElementById("promoLink").addEventListener('click', function(){aboutBox()}, false);
+}       
 
-	saveButton.addEventListener('click', function(){saveSettings()}, false);
-	killButton.addEventListener('click', function(){document.body.removeChild(settingsBox)}, false);
-	proLink.addEventListener('click', function(){aboutBox()}, false);
-}          
 function saveSettings()
 {
 	var resize = document.getElementById("showthumbs");
@@ -145,7 +148,6 @@ function saveSettings()
 
 function initSettings()
 {
-	console.log("settings");
 	var settingsLink = document.createElement("a");
 	settingsLink.className = "mi";
 	settingsLink.setAttribute("href", "#");
@@ -154,28 +156,10 @@ function initSettings()
 
 	var barLink = null;
 	var menu = null;
-
-	var tooManyAs = document.querySelectorAll(".mi");
-	for(var a = 0; a < tooManyAs.length; a++)
-	{
-		if(tooManyAs.className =="mi")
-		{
-			barLink = tooManyAs[a];
-			a = tooManyAs.length;
-		}
-	}
 	var tooManyDivs = document.querySelectorAll(".oh-menu");
+	menu = tooManyDivs[1];
 
-	for(var d = 0; d < tooManyDivs.length; d++)
-	{
-		if(tooManyDivs[d].className =="oh-menu")
-		{
-			menu = tooManyDivs[d];
-			d = tooManyDivs.length;
-		}
-	}
-
-	menu.insertBefore(settingsLink, barLink);
+	menu.appendChild(settingsLink);
 
 	settingsLink.addEventListener("click", function(){settingsModal()}, false);
 }
@@ -258,6 +242,9 @@ function addDDtab()
 	{
 		var tab = document.createElement('td')
 			tab.id = "ddTab";
+		tab.className = "f";
+		tab.style.paddingTop = "20px";
+
 
 		if(document.location.pathname.indexOf('dds') != -1)
 		{
@@ -266,50 +253,33 @@ function addDDtab()
 			tab.innerHTML = '<a class="gtab" href="/dds/" ><i class="icon i29"></i>DD\'s</a>';
 		}
 		tab.class="f";
-		var tables = document.getElementsByTagName("*");
-		for(var i = 0; i < tables.length; i++)
-		{
-			if(tables[i].className == "iconset-gruser f")
-			{    
-				var  tabBox = tables[i]
-					if(tabBox.firstChild.firstChild != null)
-					{
-						tabBox.firstChild.firstChild.appendChild(tab);
-					}
+		var tables = document.querySelectorAll(".iconset-gruser.f");
+		var  tabBox = tables[0]
+			if(tabBox.firstChild.firstChild != null)
+			{
+				tabBox.firstChild.firstChild.appendChild(tab);
 			}
-		}
 	}
 }
 
 
 function groupLog()
 {
-	var deviant = document.getElementById("oh-menu-deviant").childNodes[0].childNodes[0];
-	for(var i = 0; i < deviant.childNodes.length; i++)
+	var deviant = document.querySelectorAll("#oh-menu-deviant .oh-menu")[0];
+	var groups = deviant.querySelectorAll(".mi.iconset-messages");
+	for(var i = 0; i < groups.length; i++)
 	{
-		if(deviant.childNodes[i].className == "mi iconset-messages")
+		console.log(groups[i].innerHTML);
+		if(groups[i].className == "mi iconset-messages")
 		{
-			var groupURL = deviant.childNodes[i].innerHTML.split("</i>")[1].split("#")[1];
+			var groupURL = groups[i].innerHTML.split("</i>")[1].split("#")[1];
 			var groupBack = "http://"+groupURL+".deviantart.com/messages/?log_type=1";
 			var groupRoom = document.createElement("a");
 			groupRoom.className = 'mi iconset-messages a';
 			groupRoom.setAttribute('href', groupBack);
 			var innerLink = '<i class="i2"></i> #'+groupURL+' message log';
 			groupRoom.innerHTML = innerLink;
-			deviant.childNodes[i].parentNode.insertBefore(groupRoom, deviant.childNodes[i].nextSibling);
-		}
-		if(deviant.childNodes[i].id == "loginbar-group")
-		{
-			var groupID = deviant.childNodes[i].childNodes[0].innerHTML.split("</i>");
-			var groupName = groupID[1].split("#");      
-			var groupURL = groupName[1];
-			var groupBack = "http://"+groupURL+".deviantart.com/messages/?log_type=1";
-			var groupRoom = document.createElement("a");
-			groupRoom.className = 'mi iconset-messages a';
-			groupRoom.setAttribute('href', groupBack);
-			var innerLink = '<i class="i2"></i> #'+groupURL+' message log';
-			groupRoom.innerHTML = innerLink;
-			deviant.childNodes[i].childNodes[0].parentNode.insertBefore(groupRoom, deviant.childNodes[i].childNodes[0].nextSibling);
+			groups[i].parentNode.insertBefore(groupRoom, groups[i].nextSibling);
 		}
 	}
 
@@ -333,7 +303,6 @@ function suggestDD()
 	var suggDDButt = document.createElement("div") 
 		suggDDButt.innerHTML = '<a id ="suggDDButt" class = "smbutton smbutton-green suggDDButt" onclick="return DWait.readyLink([\'jms/pages/blogobox.js\', \'cssms/pages/deviation/note-modal.css\'], this, \'Blogobox.noteModal('+devLoc[devLoc.length - 1].split("#")[0]+')\')" href="#"><img width="24" height="24" border="0" alt="Suggest For DD" src="http://www.freewebs.com/trezoid/dAfiles/dAUltra/plusHeart.png"> <b> Suggest For DD</b></a>'
 
-		console.log(suggDDButt.innerHTML);
 	var box = document.getElementById("favebtn-wrap");
 	console.log(box.innerHTML);
 	if(box != null)
@@ -775,7 +744,6 @@ function ajaxFoiler(obj)
 
 function deAjaxify()
 {
-	console.log("cleansing");
 	if(document.URL.indexOf("?q=") != -1)
 	{
 		var cleanURL = document.URL.split("?q=")[0];
@@ -835,7 +803,7 @@ function formatButtons()
 					".talk-post-reply .text{padding-top:25px!important;}"+
 					".pt .textarea .ultraButtonBox{display:none!important;}");
 
-			var buttonList = new Array("b","i", "u", "s", "tt","sup","sub","blockquote");
+			var buttonList = ["b","i", "u", "s", "tt","sup","sub","blockquote"];
 			for(var b = 0; b < buttonList.length; b++)
 			{
 				var formButton = document.createElement("div");
@@ -963,43 +931,6 @@ function acro()
 	currentText.value = formatted;
 }
 
-function getBox()
-{
-	GM_xmlhttpRequest(
-			{
-method: 'GET',
-url: " http://deviantart.com",
-onload: function(responseDetails) {
-process(responseDetails.responseText);
-}
-});
-}
-
-function process(box)
-{
-	var splitBox = box.split('oh-hasmenu oh-hashover oh-hasbutton oh-keep')[1];
-	var cleanerBox = splitBox.split('</td>')[0];
-
-	var header = cleanerBox.substring(2, cleanerBox.length)  + "</a>";
-
-	var headHolder = document.getElementById("overhead-collect");
-	if(headHolder != null)
-	{
-	var headMenus = headHolder.getElementsByTagName("td");
-	for(var i = 0; i < headMenus.length; i++)
-	{
-		if(headMenus[i].className == "oh-hasmenu oh-hashover oh-hasbutton oh-keep  ")
-		{
-			var messageHolder = headMenus[i];
-			messageHolder.innerHTML = header ;
-			i = headMenus.length;
-		}
-	}
-
-	setTimeout(getBox, 2000);
-	}
-}
-
 function tumblButton()
 {
 	var button = document.createElement("div");
@@ -1020,23 +951,21 @@ function tumblButton()
 
 function getGalls()
 {
-	var allDD = document.getElementsByTagName("td");
+	var allDD = document.querySelectorAll(".tt-a.huge");
 	for(var i = 0; i < (allDD.length); i++)
 	{
-		if(allDD[i].className == "f")
-		{
 			var soloDD = allDD[i];
-			if(!!soloDD.childNodes[0].getAttribute("category"))
+			if(!!soloDD.getAttribute("category"))
 			{
-				var gallery = soloDD.childNodes[0].getAttribute("category");
+				var gallery = soloDD.getAttribute("category");
 			}
 			else
 			{
-				var gallery = soloDD.childNodes[0].childNodes[0].getAttribute("category");
+				var gallery = soloDD.childNodes[0].getAttribute("category");
 			}
 			var galSpan = document.createElement("span");
 			galSpan.innerHTML = " <br/><br/><span><em>"+gallery+"</em></span>";
-			var feet = soloDD.getElementsByTagName("div");
+			var feet = soloDD.parentNode.getElementsByTagName("div");
 			for(var f = 0; f < feet.length; f++)
 			{
 				if(feet[f].className == "foot")
@@ -1045,12 +974,7 @@ function getGalls()
 						foot.appendChild(galSpan);
 					f = feet.length;
 				}
-
-			}
-
-		} 
-
-
+			} 
 	}
 }
 
@@ -1066,7 +990,6 @@ function scriptInit()
 	var pageURL = document.URL;
 	initSettings();
 	getVer();
-	//getBox();
 
 /*	if(pageURL.indexOf("/art/") >= 0)
 	{
