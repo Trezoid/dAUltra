@@ -31,6 +31,7 @@ function getVer()
 		/*******************************/
 		/* IMPORTANT: THIS DOESN'T WORK*/
 		/* IN FF17 DUE TO POLICY GUFF  */
+		/* Should work by FF17 stable  */
 		/*******************************/
 		
 			content = response.responseText;	
