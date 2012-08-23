@@ -4,14 +4,13 @@
 // @include        http://*.deviantart.com/*
 // @description    Adds extra features to dA
 // @author         Trezoid
-// @version         1.4.5.3
+// @version         1.5
 // ==/UserScript==
 
-/* Change log for 1.4.5.3
+/* Change log for 1.5
  * Bug fixes and stuff.
  */
 
-var dAUltraVer = "1.5";
 var thumbSize = 280;
 var preFill = "I would like to suggest %deviation% by %artist% for a DD because";
 var currentPage = ""; 
@@ -34,9 +33,9 @@ function getVer()
 		/* Should work by FF17 stable  */
 		/*******************************/
 		
-			content = response.responseText;	
-			var latestVer = content.split("Version:</b>")[1].split("</p>")[0].replace(/\n/g, "");
-			if(parseFloat(latestVer) > parseFloat(dAUltraVer))
+			var content = response.responseText;
+			var latestVer = content != null  ?  content.split("Version:</b>")[1].split("</p>")[0].replace(/\n/g, "") : "1.5";
+			if(parseFloat(latestVer) > parseFloat(GM_info.script.version))
 			{
 				updateAlert(latestVer);
 			}
@@ -50,7 +49,7 @@ function updateAlert(latestVer)
 	var alertBox = document.createElement("div");
 	alertBox.className ="alertBox";
 	alertBox.setAttribute("id", "alertBar");
-	alertBox.innerHTML ='Your current version of dAUltra ('+dAUltraVer +') is out of date. The latest version ('+latestVer + ') is available <a href ="http://userscripts.org/scripts/show/95156"> here!</a>. click the <a id="changeButton"> here instead</a> to find out what is new! (click <a id="lolPop">here</a> to close)';
+	alertBox.innerHTML ='Your current version of dAUltra ('+ GM_info.script.version+') is out of date. The latest version ('+latestVer + ') is available <a href ="http://userscripts.org/scripts/show/95156"> here!</a>. click the <a id="changeButton"> here instead</a> to find out what is new! (click <a id="lolPop">here</a> to close)';
 
 
 	GM_addStyle(".alertBox{position:fixed; width:100%; top:0px; height: 20px; background:linear-gradient(#405147, #607465) #607465;background:-moz-linear-gradient(#405147, #607465) #607465; text-align:center; color:#fff;z-index:999;border-top:1px solid #304036; padding-top:3px;}"+
@@ -67,8 +66,11 @@ function updateAlert(latestVer)
 method: 'GET',
 url: " http://www.freewebs.com/trezoid/dAfiles/dAUltra/ultraChanges.txt",
 onload: function(responseDetails) {
+if(responseDetails.responseText != null)
+{
 var changeLog = responseDetails.responseText;
 alert(changeLog);
+} else {alert("Couldn't find changelog");}
 }
 });
 			}, false);
@@ -291,11 +293,7 @@ function groupLog()
 
 /********************
 
-
-
-  THIS SHIT AIN'T WORKING. WHY?
-
-
+Not working in FF17 until it hits stable. Greasemonkey bug, not my code.
 
   *******************/
 
@@ -306,11 +304,11 @@ function suggestDD()
 	var suggDDButt = document.createElement("div") 
 		suggDDButt.innerHTML = '<a id ="suggDDButt" class = "smbutton smbutton-green suggDDButt" onclick="return DWait.readyLink([\'jms/pages/blogobox.js\', \'cssms/pages/deviation/note-modal.css\'], this, \'Blogobox.noteModal('+devLoc[devLoc.length - 1].split("#")[0]+')\')" href="#"><img width="24" height="24" border="0" alt="Suggest For DD" src="http://www.freewebs.com/trezoid/dAfiles/dAUltra/plusHeart.png"> <b> Suggest For DD</b></a>'
 
-	var box = document.getElementById("favebtn-wrap");
-	console.log(box.innerHTML);
+	var box = document.querySelectorAll(".iconset-art.icons.vicons.devlinkzone");
+	console.log(box[0].innerHTML);
 	if(box != null)
 	{
-		box.parentNode.insertBefore(suggDDButt, box.nextSibling);
+		box[0].appendChild(suggDDButt);
 		suggDDButt.addEventListener('click',timedCall, false);
 		notDD();
 	} 
@@ -324,7 +322,7 @@ function notDD()
 		name = name[0];
 	console.log(name);
 	var DDTab = 'http://'+name+'.deviantart.com/dds/';
-
+/*
 	GM_xmlhttpRequest({
 		method: 'GET',
 		url: DDTab,
@@ -332,7 +330,9 @@ function notDD()
 			var grabDate = responseDetails.responseText.split("ppp")[1].split("stream")[1];
 			lastDD(grabDate);
 		}
-	});
+	});*/
+
+	lastDD("000000000");
 }
 
 function lastDD(grabDate)
@@ -403,7 +403,7 @@ function replaceButtons()
 	currentText.value = "loading CV list";
 	currentText.setAttribute("readonly", "readonly");
 	currentText.setAttribute("id", "manualEnter");
-
+	manualSwap();
 	var manualEnter = document.createElement("a")
 		manualEnter.setAttribute("id", "toggleEdit");
 
@@ -416,7 +416,7 @@ function replaceButtons()
 	currentBox.insertBefore(manualEnter, drops.nextSibling);
 
 	manualEnter.addEventListener('click', manualSwap, false);
-	getStaff();
+	//getStaff();
 	var suggSend = document.createElement("div");
 	suggSend.style.display="inline-block";
 	suggSend.innerHTML = '<input type="button" style="width: 10ex; font-size: 10pt; " onclick="" value="Send" class="isend" tabindex="303">';
@@ -449,40 +449,26 @@ function replaceButtons()
 		DDHead.className = "ddHead";
 	DDHead.innerHTML = "Suggest DD";
 
-	var allDivs = document.getElementsByTagName("div");
-	for(var i = 0; i<allDivs.length; i++)
-	{
-		if(allDivs[i].className == "pimp-note")
-		{
-			var modelBox = allDivs[i];
+	var allDivs = document.querySelectorAll(".pimp-note");
+			var modelBox = allDivs[1];
 			var allSubModels = modelBox.childNodes;
 			allSubModels[9].removeChild(allSubModels[9].childNodes[0]);
 			allSubModels[9].insertBefore(suggSend, allSubModels[9].childNodes[0]);
 			modelBox.insertBefore(stayAnon, modelBox.lastChild);
 			modelBox.insertBefore(DDHead, modelBox.firstChild);  
-			for (var y = 0; y < modelBox.childNodes.length; y++)
-			{
-				if(modelBox.childNodes[y].className=="pt")
-				{
-					var   littleBox = modelBox.childNodes[y];
-					var textSpace = littleBox.childNodes[3];
+					var textSpace = document.querySelectorAll('.textarea')[1];
 
-					var settingBlob = GM_getValue("dAUltra").split("|");
+					var settingBlob = JSON.parse(GM_getValue("dAUltra"));
 
-					if(settingBlob[6] == "true")
+					if(settingBlob["preflight"])
 					{
-						var customText = preFill.replace("%deviation%", '<a href="' + document.URL + '">' + devImgName +"</a>");
+						var customText = settingBlob["prefill"].replace("%deviation%", '<a href="' + document.URL + '">' + devImgName +"</a>");
 						customText = customText.replace("%artist%",":dev"+devName+":"); 
 						var innerText = textSpace.getElementsByTagName("textarea")[0];
 						var preText = customText + innerText.value;
 						//textSpace.childNodes[0].setAttribute('name', 'suggestText');
 						innerText.value = preText;
 					}
-				}
-			}
-		} 
-	}
-
 	GM_addStyle(".modal{background:transparent!important;}"+
 			".stayAnon{margin-left:90px!important;padding-top:10px!important;}"+
 			".ddHead{font-size:40px; color:#161816; font-family:verdana, helvetica, san-serif;text-shadow:-1px -1px 0px #f3f6f2;margin-top:-30px;padding-bottom:20px!important;}"+
@@ -506,196 +492,35 @@ function manualSwap()
 			auto.style.display = "none";
 			manual.style.display = "inline";
 			manual.removeAttribute("readonly");
-			manual.value = "type in a CV name";
+			manual.value = "";
+			manual.placeholder = "type in a CV name";
 		}
 		else{
 			auto.style.display = "inline";
 			manual.style.display = "none";
 		}
+	} else {
+		manual.removeAttribute("readonly");
+			manual.value = "";
+			manual.placeholder = "type in a CV name";
 	}
+
 }
 /*
  * Cue 155 line kludge to get the staff list in a usable form
  */
 function getStaff()
 {
-	GM_xmlhttpRequest(
-			{
-method: 'GET',
-url: 'http://stafflist.deviantart.com/journal/The-Devious-stafflist-221350598',
-onload: function(responseDetails) {
-var staffListSource = responseDetails.responseText.split("Stalking Admins");
-var splitStaffSource = staffListSource[4].split("journalbottom")[0].split("plain");
-staffSearch(splitStaffSource);
-}
-});
+	/* 
+	 This isn't working properly and the list needs a complete overhaul. Defaulting to manual input for now.
+	 */
+
+manualSwap();
 }
 
 function staffSearch(splitStaffSource)
 {
-	var CRTeam = "";
-	var startNum = 0;
-	var endNum = 0;
-	for(var y = 0; y < splitStaffSource.length; y++)
-	{
-		if(splitStaffSource[y].indexOf("Community Relations") > -1)
-		{
-			startNum = y;
-			y = splitStaffSource.length;
-		}
-	}
-
-	for(var y = startNum; y < splitStaffSource.length; y++)
-	{
-		if(splitStaffSource[y].indexOf("Creative Staff") > -1)
-		{
-			endNum = y;
-			y = splitStaffSource.length;
-		}
-	}
-
-	for(var i = 11; i < 22; i++)
-	{
-		CRTeam += splitStaffSource[i];
-	}
-
-	var GMList = CRTeam.split("<br />");
-
-	for(var i = 0; i < GMList.length; i++)
-	{
-		GMList[i] = GMList[i].replace("</a>", "");
-		GMList[i] = GMList[i].replace('<a class="u" ', "");
-		GMList[i] = GMList[i].replace('<div class="', "");
-		GMList[i] = GMList[i].replace(/href="http:\/\//, "");
-		GMList[i] = GMList[i].replace(/[a-z0-9:punct:$\-]*.deviantart.com\/">/, "");
-		GMList[i] = GMList[i].replace(/[a-z0-9:punct:$\-]*.deviantart.com/, "");
-		GMList[i] = GMList[i].replace('">', "");
-		GMList[i] = GMList[i].replace("^", "\n");
-		GMList[i] = GMList[i].replace('</div>', "");
-		GMList[i] = GMList[i].replace('s</div>', "s");
-		GMList[i] = GMList[i].replace('Street Photography', "Street");
-		GMList[i] = GMList[i].replace('Science Fiction', "Sci-Fi");
-	}
-	var tdList = document.getElementsByTagName("td");
-	for(var y = 0; y<tdList.length; y++)
-	{
-		if(tdList[y].className == "f dcats")
-		{
-			var majorCat = tdList[y].innerHTML;
-			majorCat = majorCat.replace('digital/">Digital</a>', 'digital/"></a>');
-			for(var i = 0; i < 5; i++)
-			{
-				majorCat = majorCat.replace("</a>", "|");
-				majorCat = majorCat.replace('<a class="h" href="',"");
-				majorCat = majorCat.replace('http://browse.deviantart.com', "");
-				majorCat = majorCat.replace(/\/[a-z]*\/">/, "");
-				majorCat = majorCat.replace(/\/[a-z]*\/[a-z]*">/, "");
-				majorCat = majorCat.replace(/\/[a-z]*\/[a-z]*\/[a-z]*">/, "");
-				majorCat = majorCat.replace(/\/[a-z]*/, "");
-			}
-			majorCat = majorCat.replace('3d">', "");
-			majorCat = majorCat.replace("3-Dimensional Art", "3D Art");
-			majorCat = majorCat.replace("Emoticons", "Emotes");
-			majorCat = majorCat.replace("Resources &amp; Stock Images", "Resources &amp; Stock");
-			majorCat = majorCat.replace("Manga &amp; Anime", "Anime/Manga");
-			majorCat = majorCat.replace("street photography", "Street");
-			majorCat = majorCat.replace("deviantART Related", "DA Related"); 
-			var catSplit = majorCat.split("|");
-			var firstCat = catSplit[0].slice(0, catSplit[0].length);
-			var secondCat = catSplit[1].slice(1, catSplit[1].length);
-			var thirdCat = catSplit[2].slice(1, catSplit[2].length);    
-			var imageGM = [];
-			var GMCounter = 0;
-			if(GMList.length>3)
-			{
-				for(var s = (GMList.length - 1); s > 0; s--)
-				{
-					if(GMList[s].indexOf(firstCat) != -1 && GMList[s].slice(0, GMList[s].length-1) != firstCat && GMList[s] != firstCat && GMList[s] != "")
-					{
-						imageGM[GMCounter] = GMList[s];
-						GMCounter++;
-					}
-
-					if(GMList[s].indexOf(secondCat) != -1 && GMList[s] != "")
-					{
-						if(secondCat.indexOf("Street") != -1 && s < 20)
-						{
-							imageGM[GMCounter] = GMList[s];
-							GMCounter++;
-						}
-
-						if(secondCat.indexOf('Street') == -1)
-						{
-							imageGM[GMCounter] = GMList[s];
-							GMCounter++;
-						}
-					}
-
-					if(GMList[s].indexOf(thirdCat) != -1 && thirdCat != "" && thirdCat != " ")
-					{
-						imageGM[GMCounter] = GMList[s];
-						GMCounter++;
-					}
-					if((s-1)== 2 && GMCounter == 0)
-					{
-						firstCat = "Community Projects";
-						s = GMList.length - 1 ;
-					}
-				}
-			}
-
-			var GMSelect = document.createElement('select');
-			GMSelect.className = "GMSelect";
-			GMSelect.setAttribute("style", "display:inline");
-			GMSelect.setAttribute("id", "GMSelect");
-			var innerOps = ""
-				for (var i = 0; i < imageGM.length; i++)
-				{ 
-					if(imageGM[i].indexOf("Anoya") == -1)
-					{
-						var optionBlock = '<option value ="'+imageGM[i]+'">'+imageGM[i] +'</option>\n';
-						innerOps += optionBlock + "+";
-					}
-				}
-			GMSelect.innerHTML = innerOps;   
-			var currentText = document.createElement("input");
-			var allIns = document.getElementsByTagName("input");
-			for(var i = 0; i<allIns.length;i++)
-			{
-				if (allIns[i].className == "itext")
-				{
-					currentText = allIns[i]
-				}
-			}
-
-			if(GMList.length > 1 && imageGM.length > 0)
-			{
-				currentText.parentNode.insertBefore(GMSelect, currentText);
-				currentText.style.display ="none";
-			}
-			else
-			{
-				currentText.removeAttribute("readonly")
-					currentText.value = "Please type out a GM name" 
-					var errorCode = "Unknown Error";
-
-				if(GMList.length <= 1)
-				{
-					errorCode = "GM List too short or not found";
-
-				}
-				if(currentText == null)
-				{
-					errorCode = "Insert point not found";
-				}
-				if(imageGM.length < 1)
-				{
-					errorCode = "GM Not found";
-				}
-				alert("An error occured: " + errorCode); 
-			}
-		}
-	}
+	return null;
 }
 
 
@@ -725,15 +550,6 @@ function filldetails()
 			}
 		}
 	}
-	var currentText = document.getElementById("manualEnter");
-
-	var GMDrop = document.getElementById("GMSelect");
-	if(GMDrop.style.display=="inline")
-	{
-		var choiceGM = GMDrop.value.split(" - ")[0];
-		console.log(choiceGM);
-		currentText.value = choiceGM;  
-	}
 	unsafeWindow.Blogobox.note(this); 
 }
 
@@ -760,14 +576,8 @@ function deAjaxify()
 
 function initFormat()
 {
-	var allButts = document.getElementsByTagName("div");
-	for(var i = 0; i < allButts.length; i++)
-	{
-		if(allButts[i].className =="mcb-controls")
-		{
-			allButts[i].childNodes[1].addEventListener('click', slowFormat, false);
-		}
-	}
+	var allButts = document.querySelectorAll(".mcb-controls");
+			allButts[1].childNodes[1].addEventListener('click', slowFormat, false);
 }
 
 function slowFormat()
@@ -777,20 +587,16 @@ function slowFormat()
 
 function formatButtons()
 {
-	var textBoxes = document.getElementsByTagName("textarea");
-	var allLabs = document.getElementsByTagName("div");
+	var allLabs = document.querySelectorAll(".dpToolbar")[1];
 	var hasZikes = false;
-	for (var a = 0; a < allLabs.length; a++)
-	{
-		if (allLabs[a].className == 'dpToolbar')
+		if(!!allLabs)
 		{
 			hasZikes = true;
 		}
-	}
 
 	if(hasZikes == false)
 	{
-
+		var textBoxes = document.querySelectorAll(".cctextarea-ctrl");
 		for(var i = 0; i < textBoxes.length; i++)
 		{
 			var buttonBox = document.createElement("div");
@@ -798,10 +604,10 @@ function formatButtons()
 			var buttonID = "dAUB"+i;
 			buttonBox.setAttribute("id", buttonID);
 
-			textBoxes[i].parentNode.appendChild(buttonBox);
+			textBoxes[i].appendChild(buttonBox);
 
 			GM_addStyle(".dAUltraButton{position:relative; top:0; float:left!important;width:10px; heigth:22px;border:1px solid #000;text-align:center!important;background:-moz-linear-gradient(#415248, #607465)!important;color:#fff!important;margin-right:3px!important;}"+
-					".ultraButtonBox{position:absolute; top:-3px!important;left:-3px!important;height:22px!important;width:100%!important;z-index:900!important;background:#B6CAB2!important;padding-left:5px!important; padding-right:2px!important;padding-top:3px!important;-moz-border-radius-topleft:5px;-moz-border-radius-topright:5px!important}"+
+					".ultraButtonBox{position:absolute; top:-3px!important;left:-3px!important;height:22px!important;width:100%!important;z-index:100!important;background:#B6CAB2!important;padding-left:5px!important; padding-right:2px!important;padding-top:3px!important;-moz-border-radius-topleft:5px;-moz-border-radius-topright:5px!important}"+
 					"textarea{padding-top:25px!important;}"+
 					".talk-post-reply .text{padding-top:25px!important;}"+
 					".pt .textarea .ultraButtonBox{display:none!important;}");
@@ -934,23 +740,6 @@ function acro()
 	currentText.value = formatted;
 }
 
-function tumblButton()
-{
-	var button = document.createElement("div");
-	button.innerHTML = '<a href="http://www.tumblr.com/share" title="Share on Tumblr" style=\'display:inline-block; text-indent:36px; overflow:visible; width:20px; height:20px; background:url("http://platform.tumblr.com/v1/share_4.png") top left no-repeat transparent;\'>Tumblr</a>';
-
-	var allDivs = document.getElementsByTagName("div");
-
-	for(var i = 0; i < allDivs.length; i++)
-	{
-		if(allDivs[i].className == "social ll")
-		{
-			var parent = allDivs[i];
-			parent.appendChild(button);
-			i = allDivs.length;
-		}
-	}
-}
 
 function getGalls()
 {
@@ -1028,7 +817,6 @@ function scriptInit()
 	} else {
 		settings = JSON.parse(settingBlob);
 	}
-
 	deAjaxify();
 	if(settings["resize"])
 	{
@@ -1043,25 +831,19 @@ function scriptInit()
 		formatButtons();
 		setTimeout(initFormat, 500);
 	}
-	if(settings["tabs"])
-	{
-		addDDtab();
-	}
+	console.log(settings.tabs);
+	console.log(settings["suggDD"]);
 	if(settings["suggDD"])
 	{
 		suggestDD();
 	}
-/*	if(settings["deAjax"] != false)
+	if(settings["tabs"])
 	{
-		console.log("noJax!");
-		deAjaxify();
+		addDDtab();
 	}
-*/
-
-
 }
 
-function firstTime()
+(function()
 {
 	var value = GM_getValue("dAUltra");
 	if(value == null || value =="")
@@ -1070,10 +852,7 @@ function firstTime()
 		alert("It appears that you haven't set up dAUltra. Please choose your settings now, then press save");
 	}
 	else{scriptInit();}
-}
-
-
-firstTime();
+})();
 
 
 GM_addStyle(
