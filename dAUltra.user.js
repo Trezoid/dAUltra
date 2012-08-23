@@ -49,7 +49,7 @@ function updateAlert(latestVer)
 	var alertBox = document.createElement("div");
 	alertBox.className ="alertBox";
 	alertBox.setAttribute("id", "alertBar");
-	alertBox.innerHTML ='Your current version of dAUltra ('+ GM_info.script.version+') is out of date. The latest version ('+latestVer + ') is available <a href ="http://userscripts.org/scripts/show/95156"> here!</a>. click the <a id="changeButton"> here instead</a> to find out what is new! (click <a id="lolPop">here</a> to close)';
+	alertBox.innerHTML ='Your current version of dAUltra ('+ GM_info.script.version+') is out of date. The latest version ('+latestVer + ') is available <a href ="http://userscripts.org/scripts/show/95156"> here</a>, or click <a id="changeButton"> here instead</a> to find out what\'s new! (click <a id="lolPop">here</a> to close)';
 
 
 	GM_addStyle(".alertBox{position:fixed; width:100%; top:0px; height: 20px; background:linear-gradient(#405147, #607465) #607465;background:-moz-linear-gradient(#405147, #607465) #607465; text-align:center; color:#fff;z-index:999;border-top:1px solid #304036; padding-top:3px;}"+
